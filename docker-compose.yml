@@ -1,0 +1,35 @@
+version: '3'
+services:
+  # Service web
+  web:
+    # Build file for server is in that folder
+    build: ../shopmanagementserver/
+    # This service needs postgres service to be up.
+    depends_on:
+      - postgres
+
+  # Service client
+  client:
+    # Build file for client is in that folder
+    build: ../shopmanagementclient/
+    # Expose container port 80 to host port 80
+    ports:
+      - "80:80"
+    depends_on:
+    # For this service to work, servie web should be up.
+      - web
+
+  # Database service
+  postgres:
+    image: postgres
+    volumes:
+      # Mount ./data fro host to /var/lib/postgresql/data in container
+       - ./data:/var/lib/postgresql/data
+    # Environment variables to be passed to postgres
+    environment:
+      POSTGRES_DB: ms_prod 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres 
+    # Map 5432 port from container to port 5434 in host
+    ports:
+      - "5434:5432"
